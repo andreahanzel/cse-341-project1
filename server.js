@@ -1,15 +1,24 @@
 const express = require('express');
 const app = express();
+require('dotenv').config();
+const { MongoClient } = require('mongodb');
+const contactsRouter = require('./routes/contacts'); // Import contacts routes
 
-// Define a port
-const PORT = process.env.PORT || 3000;
+const uri = process.env.MONGO_URI;
+const client = new MongoClient(uri);
 
-// Create a route
-app.get('/', (req, res) => {
-    res.send('Hello, World!');
-});
+client.connect()
+    .then(() => console.log('Connected to MongoDB'))
+    .catch(err => console.error('Error connecting to MongoDB:', err));
+
+// Middleware for parsing JSON (optional, for future POST/PUT requests)
+app.use(express.json());
+
+// Define routes
+app.use('/contacts', contactsRouter);
 
 // Start the server
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
