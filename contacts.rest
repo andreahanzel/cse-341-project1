@@ -1,0 +1,11 @@
+# Get all contacts
+GET https://cse341-project1-k3ac.onrender.com/contacts
+
+# Get a single contact by ID (Alice)
+GET https://cse341-project1-k3ac.onrender.com/contacts/6782c20a395dee0c23007d4e
+
+# Get a single contact by ID (Bob)
+GET https://cse341-project1-k3ac.onrender.com/contacts/6782c223395dee0c23007d50
+
+# Get a single contact by ID (Charlie)
+GET https://cse341-project1-k3ac.onrender.com/contacts/6782c22e395dee0c23007d52
