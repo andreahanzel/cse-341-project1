@@ -14,6 +14,11 @@ client.connect()
 // Middleware for parsing JSON (optional, for future POST/PUT requests)
 app.use(express.json());
 
+// Add Hello, World! route
+app.get('/', (req, res) => {
+    res.send('Hello, World!');
+});
+
 // Define routes
 app.use('/contacts', contactsRouter);
 
