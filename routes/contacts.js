@@ -1,40 +1,130 @@
-const express = require('express');
+import express from 'express'; // Use ES module import
+import {
+  getAllContacts,
+  getContactById,
+  createContact,
+  updateContact,
+  deleteContact
+} from '../controllers/contactsController.js'; // Use ES module import and include .js extension
+
 const router = express.Router();
-const { MongoClient, ObjectId } = require('mongodb');
-require('dotenv').config();
+/**
+ * @swagger
+ * /contacts:
+ *   get:
+ *     summary: Retrieve all contacts
+ *     responses:
+ *       200:
+ *         description: A list of contacts
+ */
+router.get('/', getAllContacts);
 
-const uri = process.env.MONGO_URI;
-const client = new MongoClient(uri);
+/**
+ * @swagger
+ * /contacts/{id}:
+ *   get:
+ *     summary: Retrieve a single contact by ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the contact to retrieve
+ *     responses:
+ *       200:
+ *         description: Contact details
+ *       404:
+ *         description: Contact not found
+ */
+router.get('/:id', getContactById);
 
-// GET all contacts
-router.get('/', async (req, res) => {
-  try {
-    await client.connect();
-    const contacts = await client.db('cse341').collection('contacts').find().toArray();
-    res.status(200).json(contacts);
-  } catch (err) {
-    console.error('Error retrieving contacts:', err);
-    res.status(500).send('Internal Server Error');
-  }
-});
+/**
+ * @swagger
+ * /contacts:
+ *   post:
+ *     summary: Create a new contact
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               firstName:
+ *                 type: string
+ *               lastName:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               favoriteColor:
+ *                 type: string
+ *               birthday:
+ *                 type: string
+ *                 format: date
+ *     responses:
+ *       201:
+ *         description: Contact created successfully
+ */
+router.post('/', createContact);
 
-// GET a single contact by ID
-router.get('/:id', async (req, res) => {
-  try {
-    await client.connect();
-    const contact = await client
-      .db('cse341')
-      .collection('contacts')
-      .findOne({ _id: new ObjectId(req.params.id) });
-    if (contact) {
-      res.status(200).json(contact);
-    } else {
-      res.status(404).send('Contact not found');
-    }
-  } catch (err) {
-    console.error('Error retrieving contact:', err);
-    res.status(500).send('Internal Server Error');
-  }
-});
+/**
+ * @swagger
+ * /contacts/{id}:
+ *   put:
+ *     summary: Update a contact by ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the contact to update
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               firstName:
+ *                 type: string
+ *               lastName:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               favoriteColor:
+ *                 type: string
+ *               birthday:
+ *                 type: string
+ *                 format: date
+ *     responses:
+ *       200:
+ *         description: Contact updated successfully
+ *       404:
+ *         description: Contact not found
+ */
+router.put('/:id', updateContact);
 
-module.exports = router;
+/**
+ * @swagger
+ * /contacts/{id}:
+ *   delete:
+ *     summary: Delete a contact by ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the contact to delete
+ *     responses:
+ *       200:
+ *         description: Contact deleted successfully
+ *       404:
+ *         description: Contact not found
+ */
+router.delete('/:id', deleteContact);
+
+// Export the router using ES module syntax
+export default router;

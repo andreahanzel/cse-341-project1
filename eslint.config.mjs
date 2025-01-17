@@ -37,9 +37,11 @@ export default [
           singleQuote: true,
           trailingComma: 'none',
           bracketSpacing: true,
-          bracketSameLine: false // This replaces jsxBracketSameLine
+          bracketSameLine: false, // Replaces jsxBracketSameLine
+          endOfLine: 'lf' // Enforces Unix-style line endings
         }
-      ]
+      ],
+      'linebreak-style': ['error', 'unix'] // Ensures Unix line endings (LF)
     },
     settings: {
       react: {
