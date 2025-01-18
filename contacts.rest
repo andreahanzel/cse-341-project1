@@ -2,37 +2,37 @@
 GET http://localhost:3000/contacts HTTP/1.1
 
 ### Get a single contact by ID (Contact1)
-GET http://localhost:3000/contacts/678aa89fb3a64fb72ae5f205 HTTP/1.1
+GET http://localhost:3000/contacts/678add31235a27e2ec7f0b13 HTTP/1.1
 
 ### Get a single contact by ID (Contact2)
-GET http://localhost:3000/contacts/678aa81c97f9f01aac2a9d36 HTTP/1.1
+GET http://localhost:3000/contacts/678aedd4806b1bdcbc2cc156 HTTP/1.1
 
-### Get a single contact by ID (Contact1)
-GET http://localhost:3000/contacts/678ac78a9110dbcde095f4fa HTTP/1.1
+### Get a single contact by ID (Contact3)
+GET http://localhost:3000/contacts/678af359f2c19eb8758bdbf0 HTTP/1.1
 
 ### Create a new contact
-POST http://localhost:3000/contacts HTTP/1.1
+POST http://localhost:3000/contacts/ HTTP/1.1
 Content-Type: application/json
 
 {
-  "firstName": "Doe",
+  "firstName": "Hello",
   "lastName": "Doe",
-  "email": "doe@example.com",
+  "email": "HelloDoe@example.com",
   "favoriteColor": "Blue",
   "birthday": "1994-08-26"
 }
 
 ### Update a contact (Bob)
-PUT http://localhost:3000/contacts/678aa89fb3a64fb72ae5f205 HTTP/1.1
+PUT http://localhost:3000/contacts/678af359f2c19eb8758bdbf0 HTTP/1.1
 Content-Type: application/json
 
 {
-  "firstName": "Stephan",
-  "lastName": "Smith",
-  "email": "stephan.smith@example.com",
-  "favoriteColor": "White",
-  "birthday": "1988-12-10"
+  "firstName": "Test4",
+  "lastName": "Examples",
+  "email": "test@example.com",
+  "favoriteColor": "Blue",
+  "birthday": "1994-08-26"
 }
 
 ### Delete a contact (Charlie)
-DELETE http://localhost:3000/contacts/678ac78a9110dbcde095f4fa HTTP/1.1
+DELETE http://localhost:3000/contacts/678b0c5fa284ec65686124f2 HTTP/1.1

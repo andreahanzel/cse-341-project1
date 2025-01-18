@@ -5,7 +5,7 @@ dotenv.config();
 const uri = process.env.MONGO_URI;
 const client = new MongoClient(uri);
 
-const connectToDatabase = async () => {
+export const connectToDatabase = async () => {
   try {
     // Ensure the client is connected
     if (!client.topology || !client.topology.isConnected()) {
@@ -19,4 +19,12 @@ const connectToDatabase = async () => {
   }
 };
 
-export default connectToDatabase;
+export const initDb = async (callback) => {
+  try {
+    await client.connect();
+    console.log('Successfully connected to MongoDB');
+    callback(null);
+  } catch (err) {
+    callback(err);
+  }
+};

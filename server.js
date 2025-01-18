@@ -1,46 +1,26 @@
 import express from 'express';
-import dotenv from 'dotenv';
-import { MongoClient } from 'mongodb';
-import contactsRouter from './routes/contacts.js'; // Use default export
-import swaggerUi from 'swagger-ui-express';
-import { readFile } from 'fs/promises';
+import { initDb } from './config/database.js';
+import bodyParser from 'body-parser'; // Import the entire package
+import router from './routes/index.js'; // .js is included
 
 const app = express();
-dotenv.config();
+const port = process.env.PORT || 3000;
 
-// Read Swagger document
-const swaggerDocument = JSON.parse(
-  await readFile(new URL('./swagger-output.json', import.meta.url))
-);
+app.use(bodyParser.json()); // Use .json() method from the imported package
+app.use('/', router); // Used the router from './routes/index.js'
 
-const uri = process.env.MONGO_URI;
-const client = new MongoClient(uri);
-
-client
-  .connect()
-  .then(() => console.log('Connected to MongoDB'))
-  .catch((err) => console.error('Error connecting to MongoDB:', err));
-
-// Middleware for parsing JSON
-app.use(express.json());
-
-// Serve Swagger documentation
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-
-// Root route
-app.get('/', (req, res) => {
-  res.send('Hello, World!');
+// Added logging middleware to help diagnose routing issues
+app.use((req, res, next) => {
+  console.log(`Received ${req.method} request to ${req.path}`);
+  next();
 });
 
-// Mount contacts router
-app.use('/contacts', contactsRouter);
-
-// 404 handler
-app.use((req, res) => {
-  res.status(404).json({ error: `Route ${req.originalUrl} not found` });
-});
-
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+initDb((err) => {
+  if (err) {
+    console.log(err);
+  } else {
+    app.listen(port, () => {
+      console.log(`Database is listening and node running on port ${port}`);
+    });
+  }
 });
