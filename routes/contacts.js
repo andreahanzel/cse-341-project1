@@ -1,5 +1,7 @@
 import express from 'express';
 import contactsController from '../controllers/contacts.js';
+import { contactValidationRules, validate } from '../middleware/validation.js';
+import BaseError from '../helpers/baseError.js';
 
 const router = express.Router();
 
@@ -49,7 +51,7 @@ const router = express.Router();
  *         description: Internal Server Error
  */
 router.get('/', contactsController.getAll);
-router.post('/', contactsController.createContact);
+router.post('/', contactValidationRules(), validate, contactsController.createContact);
 
 /**
  * @swagger
@@ -139,8 +141,18 @@ router.post('/', contactsController.createContact);
  *       500:
  *         description: Internal Server Error
  */
-router.get('/:id', contactsController.getSingle);
-router.put('/:id', contactsController.updateContact);
+router.get('/:id', async (req, res, next) => {
+  try {
+    if (!req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
+      throw new BaseError('ValidationError', 400, true, 'Invalid contact ID format');
+    }
+    await contactsController.getSingle(req, res, next);
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.put('/:id', contactValidationRules(), validate, contactsController.updateContact);
 router.delete('/:id', contactsController.deleteContact);
 
 export default router;

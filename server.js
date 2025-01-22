@@ -2,7 +2,7 @@ import express from 'express';
 import { initDb } from './config/database.js';
 import bodyParser from 'body-parser'; // Import the entire package
 import router from './routes/index.js'; // .js is included
-
+import { errorHandler } from './middleware/errorHandler.js'; // Added this import
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -17,6 +17,9 @@ app.use((req, res, next) => {
   next();
 });
 app.use('/', router);
+
+// Added error handling middleware AFTER all other middleware and routes
+app.use(errorHandler);
 
 initDb((err) => {
   if (err) {

@@ -1,4 +1,3 @@
-// eslint.config.mjs
 import globals from 'globals';
 import js from '@eslint/js';
 import react from 'eslint-plugin-react';
@@ -37,11 +36,15 @@ export default [
           singleQuote: true,
           trailingComma: 'none',
           bracketSpacing: true,
-          bracketSameLine: false, // Replaces jsxBracketSameLine
-          endOfLine: 'lf' // Enforces Unix-style line endings
+          bracketSameLine: false,
+          endOfLine: 'lf'
         }
       ],
-      'linebreak-style': ['error', 'unix'] // Ensures Unix line endings (LF)
+      'linebreak-style': ['error', 'unix'],
+      // Added rule to allow unused parameters that start with underscore
+      // This is commonly used in Express.js error handlers where 'next' parameter is required
+      // but not always used. Example: (err, req, res, _next) => {}
+      'no-unused-vars': ['error', { argsIgnorePattern: '^_' }]
     },
     settings: {
       react: {
