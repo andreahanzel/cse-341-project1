@@ -2,28 +2,28 @@
 GET http://localhost:3000/contacts HTTP/1.1
 
 ### Get a single contact by ID (Contact1)
-GET http://localhost:3000/contacts/678b24a9b0a5170f9a652c36 HTTP/1.1
+GET http://localhost:3000/contacts/678add31235a27e2ec7f0b13 HTTP/1.1
 
 ### Get a single contact by ID (Contact2)
-GET http://localhost:3000/contacts/678aedd4806b1bdcbc2cc156 HTTP/1.1
+GET http://localhost:3000/contacts/678b231f7fb7baee6d1211f3 HTTP/1.1
 
 ### Get a single contact by ID (Contact3)
-GET http://localhost:3000/contacts/678af359f2c19eb8758bdbf0 HTTP/1.1
+GET http://localhost:3000/contacts/678b2688b0a5170f9a652c37 HTTP/1.1
 
 ### Create a new contact
 POST http://localhost:3000/contacts/ HTTP/1.1
 Content-Type: application/json
 
 {
-  "firstName": "Hello333",
-  "lastName": "Doe333",
-  "email": "HelloDoe333@example.com",
+  "firstName": "Hello000",
+  "lastName": "Doe000",
+  "email": "HelloDoe000@example.com",
   "favoriteColor": "Blue",
   "birthday": "1994-08-26"
 }
 
 ### Update a contact (Bob)
-PUT http://localhost:3000/contacts/678b1b131120709fc3cd4088 HTTP/1.1
+PUT http://localhost:3000/contacts/679151e39fa98d9882159037 HTTP/1.1
 Content-Type: application/json
 
 {
@@ -35,7 +35,7 @@ Content-Type: application/json
 }
 
 ### Delete a contact (Contact Created)
-DELETE http://localhost:3000/contacts/678b2184dfe372929e6318e3 HTTP/1.1
+DELETE http://localhost:3000/contacts/679151e39fa98d9882159037 HTTP/1.1
 
 ### --- Error Test Cases ---
 

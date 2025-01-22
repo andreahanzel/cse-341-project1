@@ -1,13 +1,41 @@
 import { connectToDatabase } from '../config/database.js';
 import { ObjectId } from 'mongodb';
+import mongoose from 'mongoose';
+
+// Define Mongoose schema and model
+const contactSchema = new mongoose.Schema({
+  firstName: {
+    type: String,
+    required: [true, 'First name is required'],
+    minlength: [2, 'First name must be at least 2 characters']
+  },
+  lastName: {
+    type: String,
+    required: [true, 'Last name is required']
+  },
+  email: {
+    type: String,
+    required: [true, 'Email is required'],
+    match: [/\S+@\S+\.\S+/, 'Invalid email format']
+  },
+  favoriteColor: {
+    type: String
+  },
+  birthday: {
+    type: Date,
+    required: [true, 'Birthday is required']
+  }
+});
+
+const Contact = mongoose.model('Contact', contactSchema);
 
 // Get all contacts
 const getAll = async (req, res) => {
   //#swagger.tags = ['Contacts']
   try {
-    const collection = await connectToDatabase();
-    const contacts = await collection.find().toArray();
-
+    const db = await connectToDatabase(); // Use connectToDatabase
+    const collection = db.collection('contacts'); // Manually get the collection
+    const contacts = await collection.find().toArray(); // Fetch using native MongoDB
     res.setHeader('Content-Type', 'application/json');
     res.status(200).json(contacts);
   } catch (err) {
@@ -22,14 +50,14 @@ const getSingle = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Validate the ID
     if (!ObjectId.isValid(id)) {
       return res.status(400).json({ message: 'Invalid ID format' });
     }
 
-    const collection = await connectToDatabase();
+    const db = await connectToDatabase(); // Use connectToDatabase
+    const collection = db.collection('contacts'); // Manually get the collection
     const contactId = new ObjectId(id);
-    const contact = await collection.findOne({ _id: contactId });
+    const contact = await collection.findOne({ _id: contactId }); // Fetch using native MongoDB
 
     if (!contact) {
       return res.status(404).json({ message: 'Contact not found' });
@@ -47,16 +75,18 @@ const getSingle = async (req, res) => {
 const createContact = async (req, res) => {
   //#swagger.tags = ['Contacts']
   try {
-    const collection = await connectToDatabase();
-    const contact = {
-      firstName: req.body.firstName,
-      lastName: req.body.lastName,
-      email: req.body.email,
-      favoriteColor: req.body.favoriteColor,
-      birthday: req.body.birthday
-    };
+    const db = await connectToDatabase(); // Use connectToDatabase
+    const collection = db.collection('contacts'); // Manually get the collection
 
-    const response = await collection.insertOne(contact);
+    // Use Mongoose for validation before inserting
+    const newContact = new Contact(req.body);
+    const validationError = newContact.validateSync();
+
+    if (validationError) {
+      return res.status(400).json({ message: 'Validation failed', error: validationError.message });
+    }
+
+    const response = await collection.insertOne(req.body); // Insert using native MongoDB
 
     if (response.acknowledged) {
       res.status(201).json(response);
@@ -75,27 +105,24 @@ const updateContact = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Validate the ID
     if (!ObjectId.isValid(id)) {
       return res.status(400).json({ message: 'Invalid ID format' });
     }
 
-    const collection = await connectToDatabase();
+    const db = await connectToDatabase(); // Use connectToDatabase
+    const collection = db.collection('contacts'); // Manually get the collection
     const contactId = new ObjectId(id);
 
-    // Construct the update document
-    const contact = {
-      firstName: req.body.firstName,
-      lastName: req.body.lastName,
-      email: req.body.email,
-      favoriteColor: req.body.favoriteColor,
-      birthday: req.body.birthday
-    };
+    // Use Mongoose for validation before updating
+    const updatedContact = new Contact(req.body);
+    const validationError = updatedContact.validateSync();
 
-    // Use updateOne to update the document
-    const response = await collection.updateOne({ _id: contactId }, { $set: contact });
+    if (validationError) {
+      return res.status(400).json({ message: 'Validation failed', error: validationError.message });
+    }
 
-    // Check if the update was successful
+    const response = await collection.updateOne({ _id: contactId }, { $set: req.body }); // Update using native MongoDB
+
     if (response.matchedCount === 0) {
       return res.status(404).json({ message: 'Contact not found' });
     }
@@ -119,19 +146,19 @@ const deleteContact = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Validate the ID
     if (!ObjectId.isValid(id)) {
       return res.status(400).json({ message: 'Invalid ID format' });
     }
 
-    const collection = await connectToDatabase();
+    const db = await connectToDatabase(); // Use connectToDatabase
+    const collection = db.collection('contacts'); // Manually get the collection
     const contactId = new ObjectId(id);
-    const response = await collection.deleteOne({ _id: contactId });
+    const response = await collection.deleteOne({ _id: contactId }); // Delete using native MongoDB
 
     if (response.deletedCount > 0) {
       res.status(200).json({ message: 'Contact deleted successfully' });
     } else {
-      res.status(404).json({ message: 'Contact not found' });
+      return res.status(404).json({ message: 'Contact not found' });
     }
   } catch (err) {
     console.error('Error in deleteContact:', err);

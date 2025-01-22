@@ -1,18 +1,23 @@
-import { MongoClient } from 'mongodb';
+import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 dotenv.config();
 
 const uri = process.env.MONGO_URI;
-const client = new MongoClient(uri);
+
+mongoose.connection.on('error', (err) => {
+  console.error('MongoDB connection error:', err);
+});
+
+mongoose.connection.once('open', () => {
+  console.log('Connected to MongoDB using Mongoose');
+});
 
 export const connectToDatabase = async () => {
   try {
-    // Ensure the client is connected
-    if (!client.topology || !client.topology.isConnected()) {
-      await client.connect();
-    }
-    console.log('Connected to MongoDB');
-    return client.db('cse341').collection('contacts'); // Return the contacts collection
+    await mongoose.connect(uri, {
+      dbName: 'cse341' // My database name
+    });
+    return mongoose.connection.db;
   } catch (err) {
     console.error('Database connection failed:', err.message);
     throw new Error('Database connection failed: ' + err.message);
@@ -21,8 +26,9 @@ export const connectToDatabase = async () => {
 
 export const initDb = async (callback) => {
   try {
-    await client.connect();
-    console.log('Successfully connected to MongoDB');
+    await mongoose.connect(uri, {
+      dbName: 'cse341' // My database name
+    });
     callback(null);
   } catch (err) {
     callback(err);
